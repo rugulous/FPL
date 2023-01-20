@@ -31,6 +31,17 @@ async function getTeam(manager, week, elements){
 	return team;
 }
 
+function willOfThePeople(team, elementTypes){
+	const players = team.players.sort((a, b) => b.transfers_out_event - a.transfers_out_event);
+
+	const mostTransferred = players[0];
+	console.log(`Will of the people says sell ${mostTransferred.first_name} ${mostTransferred.second_name} [${elementTypes[mostTransferred.element_type - 1].singular_name_short}] (${mostTransferred.transfers_out_event} transferred out)`);
+
+	for(let i = 0; i < players.length; i++){
+		console.log(`${i + 1}. ${players[i].first_name} ${players[i].second_name} [${elementTypes[players[i].element_type - 1].singular_name_short}] (${players[i].transfers_out_event})`);
+	}
+}
+
 async function main() {
 	const { events, game_settings, phases, teams, total_players, elements, element_stats, element_types } = await fetch("https://fantasy.premierleague.com/api/bootstrap-static/")
 																																.then(res => res.json());
@@ -38,7 +49,8 @@ async function main() {
 	const gameweek = getGameweek(events);
 	const team = await getTeam(MANAGER_ID, gameweek.id, elements);
 
-	console.log(team);
+	willOfThePeople(JSON.parse(JSON.stringify(team)), element_types);
+	
 }
 
 main();
